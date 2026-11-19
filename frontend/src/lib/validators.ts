@@ -87,3 +87,87 @@ export const milestoneSchema = z.object({
 
 export const milestoneArraySchema = z.array(milestoneSchema).min(1, 'At least one milestone is required');
 export type MilestoneFormData = z.infer<typeof milestoneSchema>;
+
+export const GITHUB_PR_URL_PATTERN =
+  /^https?:\/\/(?:www\.)?github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/pull\/([1-9]\d*)\/?(?:[?#][^\s]*)?$/i;
+
+export interface GitHubPullRequestRef {
+  owner: string;
+  repo: string;
+  number: number;
+  url: string;
+}
+
+export interface GitHubPrVerification {
+  verified: boolean;
+  state?: string;
+  title?: string;
+  reason?: string;
+  unverifiable?: boolean;
+}
+
+export function parseGitHubPullRequestUrl(value: string): GitHubPullRequestRef | null {
+  if (typeof value !== 'string') return null;
+  const match = GITHUB_PR_URL_PATTERN.exec(value.trim());
+  if (!match) return null;
+  return {
+    owner: match[1],
+    repo: match[2],
+    number: Number(match[3]),
+    url: `https://github.com/${match[1]}/${match[2]}/pull/${match[3]}`,
+  };
+}
+
+export function isGitHubPullRequestUrl(value: string): boolean {
+  return parseGitHubPullRequestUrl(value) !== null;
+}
+
+export const githubPrUrlSchema = z.string().refine(isGitHubPullRequestUrl, {
+  message: 'Enter a valid GitHub pull request URL (https://github.com/owner/repo/pull/123)',
+});
+
+export async function verifyGitHubPullRequest(
+  url: string,
+  fetchImpl: typeof fetch = fetch
+): Promise<GitHubPrVerification> {
+  const ref = parseGitHubPullRequestUrl(url);
+  if (!ref) {
+    return { verified: false, reason: 'Enter a valid GitHub pull request URL.' };
+  }
+
+  try {
+    const response = await fetchImpl(`https://api.github.com/repos/${ref.owner}/${ref.repo}/pulls/${ref.number}`, {
+      headers: { Accept: 'application/vnd.github+json' },
+    });
+
+    if (response.status === 404) {
+      return { verified: false, reason: 'Repository or pull request is not accessible.' };
+    }
+    if (response.status === 403 || response.status === 429) {
+      return { verified: false, reason: 'GitHub rate limit reached; accessibility could not be confirmed.', unverifiable: true };
+    }
+    if (!response.ok) {
+      return { verified: false, reason: `GitHub responded with status ${response.status}.`, unverifiable: true };
+    }
+
+    const data = (await response.json()) as { number?: number; state?: string; title?: string };
+    if (data?.number !== ref.number) {
+      return { verified: false, reason: 'GitHub returned a different pull request.', unverifiable: true };
+    }
+    return { verified: true, state: data.state, title: data.title };
+  } catch {
+    return { verified: false, reason: 'Could not reach GitHub to verify this link.', unverifiable: true };
+  }
+}
+
+export const deliverableFileSchema = z.object({
+  name: z.string().min(1),
+  size: z.number().nonnegative(),
+  type: z.string(),
+});
+
+export const deliverableSubmissionSchema = z.object({
+  notes: z.string().trim().min(20, 'Add a summary of at least 20 characters'),
+  githubPrUrls: z.array(githubPrUrlSchema).max(10, 'At most 10 pull request links are allowed'),
+  files: z.array(deliverableFileSchema).max(20, 'At most 20 files are allowed').optional(),
+});

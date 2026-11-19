@@ -6,6 +6,44 @@ import Header from "@/components/Header";
 import { useI18n } from "@/lib/i18n";
 import Link from 'next/link';
 
+const liveEscrows: GlobeEscrow[] = [
+  {
+    id: 'sf-london-usdc',
+    client: { lat: 37.77, lon: -122.42, label: 'San Francisco' },
+    contractor: { lat: 51.51, lon: -0.13, label: 'London' },
+    asset: 'USDC',
+    status: 'locked',
+  },
+  {
+    id: 'tokyo-berlin-xlm',
+    client: { lat: 35.68, lon: 139.69, label: 'Tokyo' },
+    contractor: { lat: 52.52, lon: 13.41, label: 'Berlin' },
+    asset: 'XLM',
+    status: 'locked',
+  },
+  {
+    id: 'nyc-nairobi-usdc',
+    client: { lat: 40.71, lon: -74.01, label: 'New York' },
+    contractor: { lat: -1.29, lon: 36.82, label: 'Nairobi' },
+    asset: 'USDC',
+    status: 'locked',
+  },
+  {
+    id: 'singapore-toronto-done',
+    client: { lat: 1.35, lon: 103.82, label: 'Singapore' },
+    contractor: { lat: 43.65, lon: -79.38, label: 'Toronto' },
+    asset: 'completed',
+    status: 'released',
+  },
+  {
+    id: 'sydney-saopaulo-xlm',
+    client: { lat: -33.87, lon: 151.21, label: 'Sydney' },
+    contractor: { lat: -23.55, lon: -46.63, label: 'Sao Paulo' },
+    asset: 'XLM',
+    status: 'locked',
+  },
+];
+
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const { t, formatAmount } = useI18n();
@@ -125,6 +163,24 @@ export default function Home() {
         {/* Embedded Wallet Connect Box */}
         <div id="wallet" className="w-full max-w-md scroll-mt-24">
           <WalletConnect />
+        </div>
+      </section>
+
+      {/* Live Global Escrow Globe */}
+      <section id="global-flow" className="relative z-10 w-full py-16 px-6 border-t border-[#27272a]/60 scroll-mt-12">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="text-center space-y-3">
+            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-3.5 py-1.5 rounded-full border border-cyan-500/20">
+              Borderless by Design
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+              Every Milestone, Across the Globe
+            </h2>
+            <p className="text-[#a1a1aa] max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              Watch escrow locks and releases travel between clients and contractors in real time. Drag to orbit, scroll to zoom, and follow each glowing beam from funding to payout.
+            </p>
+          </div>
+          <EscrowGlobeVisualizer3D escrows={liveEscrows} />
         </div>
       </section>
 
