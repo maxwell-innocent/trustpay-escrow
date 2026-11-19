@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import WalletConnect from "@/components/WalletConnect";
-import NotificationBell from "@/components/NotificationBell";
+import Header from "@/components/Header";
+import { useI18n } from "@/lib/i18n";
 import Link from 'next/link';
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { t, formatAmount } = useI18n();
 
   const testimonials = [
     {
@@ -62,41 +64,7 @@ export default function Home() {
       <div className="absolute bottom-[10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
       {/* Navigation Header */}
-      <header className="w-full border-b border-[#27272a]/60 bg-[#09090b]/80 backdrop-blur-xl sticky top-0 z-50 px-6 py-4 transition-all">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform font-black text-xl">
-              T
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-lg text-white tracking-tight group-hover:text-blue-400 transition-colors">TRUSTPAY</span>
-              <span className="text-[10px] text-[#a1a1aa] font-medium tracking-wider uppercase">Stellar Escrow</span>
-            </div>
-            <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#052e16] text-[#22c55e] border border-[#14532d] ml-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse"></span>
-              Stellar Testnet
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-[#a1a1aa]">
-            <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a>
-            <a href="#wallet" className="hover:text-white transition-colors">Connect Wallet</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-          </nav>
-
-          <div className="flex items-center space-x-3">
-            <NotificationBell />
-            <Link
-              href="/projects"
-              className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/20 border border-blue-500/30 transition-all hover:shadow-blue-600/30 hover:-translate-y-0.5"
-            >
-              Launch Dashboard ↗
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative z-10 max-w-5xl mx-auto px-6 pt-16 pb-20 text-center flex flex-col items-center">
