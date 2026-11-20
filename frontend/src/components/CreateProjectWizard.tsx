@@ -406,8 +406,9 @@ export function CreateProjectWizard() {
 
             {/* Wallet Balance Verification */}
             <BalanceWarningBadge
+              address={address}
               balance={walletBalance}
-              loading={balanceLoading}
+              isLoading={balanceLoading}
               budget={formData.budget}
               token={formData.token}
               onRefresh={refreshBalance}
