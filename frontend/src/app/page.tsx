@@ -5,6 +5,7 @@ import WalletConnect from "@/components/WalletConnect";
 import Header from "@/components/Header";
 import { useI18n } from "@/lib/i18n";
 import Link from 'next/link';
+import EscrowGlobeVisualizer3D, { GlobeEscrow } from "@/components/EscrowGlobeVisualizer3D";
 
 const liveEscrows: GlobeEscrow[] = [
   {
